@@ -9,18 +9,19 @@ const jwtAuthenticator = () => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
     if (token == null) return res.sendStatus(401); // if there isn't any token
-
-    jwt.verify(token, publicKEY, (err, user) => {
-      console.log(err);
+    try {
+      const result = jwt.verify(token, publicKEY);
+      req.user = result;
+      next();
+    } catch (error) {
+      console.log(error);
       if (err) return res.sendStatus(403);
-      req.user = user;
-      next(); // pass the execution off to whatever request the client intended
-    });
+    }
   };
 
-  const generateToken = async () => {
+  const generateToken = async (userId) => {
     var payload = {
-      user: "Adar",
+      id: userId,
     };
     const signOptions = {
       expiresIn: "30d", // 30 days validity

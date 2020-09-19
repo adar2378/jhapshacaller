@@ -15,8 +15,18 @@ const User = () => {
     }
   };
 
+  const findUser = async (userId) => {
+    try {
+      const user = await UserModel.findById(userId);
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return {
     saveUser,
+    findUser,
   };
 };
 

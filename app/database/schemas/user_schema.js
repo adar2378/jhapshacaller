@@ -5,7 +5,7 @@ const myMongoose = require("../db_connector");
 var Schema = mongoose.Schema;
 
 var UserModelSchema = new Schema({
-  name: String,
+  name: { type: String, required: true },
   created_at: { type: Date, default: Date.now() },
 });
 
