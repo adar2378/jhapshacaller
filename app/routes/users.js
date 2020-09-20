@@ -1,4 +1,5 @@
 var express = require("express");
+const { query, validationResult } = require("express-validator");
 const Validator = require("../middlewares/validator")();
 var router = express.Router();
 var User = require("../database/models/user_model")();
@@ -6,14 +7,20 @@ var jwtAuthenticator = require("../middlewares/jwt_authenticator")();
 /* GET users listing. */
 router.get(
   "/",
-  // function (req, res, next) {
-  //   const errors = Validator.queryValidator(req, [{ id: "id" }]);
-  //   if (errors.length != 0) {
-  //     res.status(401).send("Please provide info");
-  //   } else {
-  //     next();
-  //   }
-  // },
+  [query("id").exists()],
+  function (req, res, next) {
+    try {
+      validationResult(req).throw();
+
+      // yay! we're good to start selling our skilled services :)))
+      next();
+    } catch (err) {
+      // Oh noes. This user doesn't have enough skills for this...
+      res
+        .status(400)
+        .json(`${err.errors[0].msg} for field ${err.errors[0].param}`);
+    }
+  },
   jwtAuthenticator.authenticateToken,
   async function (req, res, next) {
     try {
